@@ -1,0 +1,645 @@
+{
+  "points": [
+    {
+      "shape_hash": "73dc5c8c",
+      "config_sha256": "73dc5c8c3c5245129ba5f6e1b1b4b40736b6f9bd550d504ad4e69ee24a31358f",
+      "input_settings": {
+        "inputs": [
+          {
+            "node": 13,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                128,
+                1000
+              ],
+              "stride": [
+                1000,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 14,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                1000,
+                768
+              ],
+              "stride": [
+                768,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 15,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                128,
+                768
+              ],
+              "stride": [
+                768,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 16,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    128
+                  ],
+                  [
+                    "int",
+                    768
+                  ],
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 17,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    98304
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 18,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    128
+                  ],
+                  [
+                    "int",
+                    768
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 19,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    768
+                  ],
+                  [
+                    "int",
+                    1
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 20,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "int",
+                0
+              ]
+            }
+          },
+          {
+            "node": 21,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    128
+                  ],
+                  [
+                    "int",
+                    768
+                  ],
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 22,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    768
+                  ],
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 23,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "int",
+                0
+              ]
+            }
+          },
+          {
+            "node": 24,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    128
+                  ],
+                  [
+                    "int",
+                    768
+                  ],
+                  [
+                    "int",
+                    7
+                  ],
+                  [
+                    "int",
+                    7
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "aliases": [
+          {
+            "nbytes": 256000,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 13,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 1536000,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 14,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 196608,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 15,
+                "path": []
+              }
+            ]
+          }
+        ]
+      },
+      "inputs": [
+        [
+          [
+            128,
+            1000
+          ],
+          "bf16",
+          {
+            "alias": 0,
+            "x": {
+              "layout": "torch.strided",
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          }
+        ],
+        [
+          [
+            1000,
+            768
+          ],
+          "bf16",
+          {
+            "alias": 1,
+            "x": {
+              "layout": "torch.strided",
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          }
+        ],
+        [
+          [
+            128,
+            768
+          ],
+          "bf16",
+          {
+            "alias": 2,
+            "x": {
+              "layout": "torch.strided",
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          }
+        ],
+        [
+          "S",
+          [
+            128,
+            768,
+            1,
+            1
+          ]
+        ],
+        [
+          "S",
+          [
+            98304
+          ]
+        ],
+        [
+          "S",
+          [
+            128,
+            768
+          ]
+        ],
+        [
+          "S",
+          [
+            768,
+            1
+          ]
+        ],
+        [
+          "sc",
+          0
+        ],
+        [
+          "S",
+          [
+            768,
+            1,
+            1,
+            1
+          ]
+        ],
+        [
+          "S",
+          [
+            128,
+            768,
+            7,
+            7
+          ]
+        ]
+      ],
+      "alias_group_nbytes": [
+        256000,
+        1536000,
+        196608
+      ],
+      "replay_overrides": [],
+      "fidelity": {},
+      "models": {
+        "timm/train/visformer_small": {
+          "occurrences": 1
+        }
+      },
+      "replay_input_settings": {
+        "inputs": [
+          {
+            "node": 13,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                128,
+                1000
+              ],
+              "stride": [
+                1000,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 14,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                1000,
+                768
+              ],
+              "stride": [
+                768,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 15,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                128,
+                768
+              ],
+              "stride": [
+                768,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 16,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    128
+                  ],
+                  [
+                    "int",
+                    768
+                  ],
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 17,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    98304
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 18,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    128
+                  ],
+                  [
+                    "int",
+                    768
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 19,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    768
+                  ],
+                  [
+                    "int",
+                    1
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 20,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "int",
+                0
+              ]
+            }
+          },
+          {
+            "node": 21,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    768
+                  ],
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 22,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    128
+                  ],
+                  [
+                    "int",
+                    768
+                  ],
+                  [
+                    "int",
+                    7
+                  ],
+                  [
+                    "int",
+                    7
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "aliases": [
+          {
+            "nbytes": 256000,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 13,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 1536000,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 14,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 196608,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 15,
+                "path": []
+              }
+            ]
+          }
+        ]
+      },
+      "replay_config_sha256": "e7bb2d280e3acaacbb7253cdd610a6e09e1b45422ec27781e4a921ed4bc26bf2"
+    }
+  ]
+}

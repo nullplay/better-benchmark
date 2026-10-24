@@ -14,15 +14,15 @@ Extracts fused kernel regions from real model compilations as lightweight, self-
 
 4. **Parallel benchmark runner** — persistent workers per GPU, overlapped repro compilation, exclusive lock for timing isolation, CUDAGraph replay, worker recovery on CUDA errors.
 
-5. **Reference kernels** — every unique kernel pattern (at each captured shape) ships with a reference implementation serving as the optimization target for `torch.compile` output. Today written by Codex 5.5 (xhigh) in Triton; more providers planned.
+5. **Reference kernels** — canonical patterns carry reference implementations for comparison with `torch.compile` output. Existing BB kernels use optimized oracles; the new matmul regions start with marked PyTorch eager placeholders.
 
 6. **Model-level perf estimation** — per-model kernel aggregation gives an approximate accounting of how much improving an individual kernel translates to end-to-end speedup.
 
 ## Corpus
 
-**1727 unique kernel patterns** deduplicated across 158 full models (torchbench, HuggingFace, timm; training + inference) plus 8 genai microbenchmarks. **358 full model graphs** retained.
+**2283 canonical patterns and 5646 input configurations**: the original BB set contains 1727 patterns / 4977 configurations, and the matmul collection adds 556 filtered 8-hop structures / 669 configurations. **364 full model graphs** are retained across torchbench, HuggingFace, timm and genai.
 
-A full all-shapes sweep runs in ~36 min across ~5K points (1727 patterns) on 4x B200.
+The original BB subset was measured in ~36 min across ~5K points on 4x B200. The expanded matmul set has not been timed as a full sweep.
 
 <details>
 <summary>Coverage breakdown</summary>
@@ -77,9 +77,9 @@ python scripts/validate_eager.py --gpus 0,1 --max-workers 4
 ## Oracles
 
 Each canonical repro carries an **oracle** — a reference implementation
-serving as the optimization target for `torch.compile` output. Today written
-as Triton kernels, but any implementation qualifies (CUDA, CUTLASS, another
-compiler's output).
+serving as a comparison for `torch.compile` output. Optimized oracles use
+Triton, CUDA, CUTLASS or another compiler's output. New matmul oracles
+use PyTorch eager and are explicitly marked as placeholders in metadata.
 
 Oracles must match the repro's full scope and numerics (no fast-math
 substitutions), and are timed exclusively through
@@ -104,6 +104,10 @@ under different fusion rules or run and benchmarked directly end-to-end.
 ## Model accounting
 
 Per-kernel timings aggregate to the **model level**: partition a model's full post-grad graph, map each fusible partition back to its canonical pattern, and sum the per-kernel times weighted by occurrence — giving an approximate accounting of how much improving an individual kernel would speed up the whole model. Works with oracle times, SOL, or the compile path.
+
+The 8-hop matmul regions overlap. Their provenance is in
+`repros/matmul_manifest.json`; they are excluded from disjoint model partition
+manifests and model-latency sums.
 
 ```bash
 # Aggregate per-kernel times to a model-level estimate
@@ -195,6 +199,43 @@ Generation and compaction fail by default if any external operation remains
 unpriced.
 
 ## Extraction
+
+Collect filtered 8-hop matmul regions from the saved real-world FX graphs:
+
+```bash
+python scripts/extract_matmuls.py
+python scripts/extract_matmuls.py --validate-only
+```
+
+Selection walks producer and consumer edges as an undirected graph around
+each matmul-related ATen anchor. Fanout, effects, shared constants and shape
+metadata act as traversal barriers. Protected paths retain vertical MM chains,
+shared activations and genuine horizontal result joins. Only outputs depending
+on an in-region matmul are retained, followed by dead code and unused-input
+elimination.
+
+Exact directed structure matching produces one
+`repros/canonical/<gemm-prefix>_<12-hex>/` directory per structure, with every
+distinct retained input configuration in `shapes.json` and a PyTorch eager
+`oracle.py`. The selection first keeps graphs with at most eight matmul-related
+calls. Directed WL features at rounds 0, 1 and 2 then remove structures with
+similarity strictly greater than 50%. Compatible shape arguments are then
+coalesced in the executable replay interface. Export validates staged artifacts
+before publication and preserves existing optimized oracles on identical
+regeneration. Saved full graphs are reused.
+
+See [matmul collection](docs/matmul_collection.md) for the essential code,
+hash rules, source manifest, replay fidelity and validation commands.
+
+Generate per-structure and per-configuration statistics from the saved corpus:
+
+```bash
+python scripts/report_matmul_corpus.py --output-dir results/matmul_statistics
+```
+
+## Original capture hook
+
+The original fusible-partition capture path remains:
 
 ```python
 from capture_hook import install_capture_hook, uninstall_capture_hook
@@ -312,6 +353,10 @@ Per-shape data lives under `points_by_shape`; top-level `oracle_us`/`compile_us`
 
 ```
 capture_hook.py          # post-grad capture hook + partitioner
+matmul_capture.py        # saved FX loader + protected 8-hop selection and region encoding
+matmul_dedup.py          # exact structure/config equivalence and representative hashes
+matmul_shape_cleanup.py # coalesce shape arguments without losing input settings
+matmul_similarity.py    # directed WL structure similarity and representative selection
 repro_harness.py         # shared: parse_shapes_config, SOL measurement, benchmark_repro
 oracle_harness.py        # oracle check/bench infra + oracle_impl dispatch registry
 merge_captures.py        # dedup + merge into canonical set
@@ -321,6 +366,8 @@ extract_reductions.py    # batch extraction from dynamo suite
 extract_vllm.py          # vLLM/HF model capture driver
 
 scripts/
+  extract_matmuls.py     # complete filtered 8-hop export + persisted-artifact validation
+  report_matmul_corpus.py # FX/input/output/matmul counts and source-verified motifs
   bench_parallel.py      # parallel GPU benchmark runner (compile, --oracles, --full-graphs)
   bench_oracles_parallel.py  # parallel oracle sweep (resumable)
   oracle_template.py     # starting point for new oracles
@@ -340,7 +387,8 @@ scripts/
   test_bench_recovery.py # worker failure recovery tests
 
 repros/
-  canonical/             # 1727 flat, content-addressed repro dirs (each with oracle.py)
+  canonical/             # 2283 flat canonical dirs; all selected matmul configs retained
+  matmul_manifest.json   # overlapping 8-hop regions, selection rules and source checksums
   models/                # <suite>/<mode>/<model>/: manifest.json + full_graph_*.py (+ .meta.json)
 
 benchmarks/              # frozen benchmark set definitions

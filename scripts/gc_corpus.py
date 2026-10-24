@@ -62,6 +62,16 @@ def load_refcounts():
         model = str(manifest.parent.relative_to(MODELS))
         for h in json.load(open(manifest)).get("patterns", []):
             refs[h].append(model)
+    matmul_manifest = MODELS.parent / "matmul_manifest.json"
+    if matmul_manifest.exists():
+        data = json.loads(matmul_manifest.read_text())
+        hashes = {entry["name"]: entry["pattern_hash"] for entry in data["patterns"]}
+        for source in data["source_graphs"]:
+            model = "/".join(source[key] for key in ("suite", "mode", "model"))
+            for name in sorted({cut["pattern"] for cut in source["cuts"]}):
+                h = hashes[name]
+                if model not in refs[h]:
+                    refs[h].append(model)
     return refs
 
 
@@ -75,7 +85,7 @@ def canonical_by_hash():
 
 
 def repro_has_oracle(d: Path) -> bool:
-    return any(d.glob("oracle_*.py"))
+    return (d / "oracle.py").is_file() or any(d.glob("oracle_*.py"))
 
 
 def repro_quarantined(d: Path) -> bool:

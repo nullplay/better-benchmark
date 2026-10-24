@@ -1,0 +1,1164 @@
+{
+  "pattern_hash": "852f912657e5",
+  "kind": "matmul_region",
+  "collection": "matmul_effect_barrier_8hop_v1",
+  "n_ops": 26,
+  "origin_ops": [
+    "aten.add.Tensor",
+    "aten.view.default",
+    "aten.add.Tensor",
+    "aten.var_mean.correction",
+    "<built-in function getitem>",
+    "<built-in function getitem>",
+    "aten.add.Tensor",
+    "aten.rsqrt.default",
+    "aten.sub.Tensor",
+    "aten.mul.Tensor",
+    "aten.mul.Tensor",
+    "aten.add.Tensor",
+    "aten.select.int",
+    "aten.select.int",
+    "prims.convert_element_type.default",
+    "prims.convert_element_type.default",
+    "prims.convert_element_type.default",
+    "aten.permute.default",
+    "aten.addmm.default",
+    "prims.convert_element_type.default",
+    "prims.convert_element_type.default",
+    "prims.convert_element_type.default",
+    "aten.permute.default",
+    "aten.addmm.default",
+    "aten.add.Tensor",
+    "aten.div.Tensor"
+  ],
+  "gemm_count": 2,
+  "gemm_ops": {
+    "addmm": 2
+  },
+  "models": [
+    "timm/train/deit_base_distilled_patch16_224"
+  ],
+  "n_models": 1,
+  "occurrences": 2,
+  "source_cuts": 1,
+  "source_graphs": [
+    "models/timm/train/deit_base_distilled_patch16_224/full_graph_000.py"
+  ],
+  "representative": {
+    "graph": "models/timm/train/deit_base_distilled_patch16_224/full_graph_000.py",
+    "selected_positions": [
+      987,
+      1016,
+      1017,
+      1018,
+      1019,
+      1020,
+      1021,
+      1022,
+      1023,
+      1024,
+      1025,
+      1026,
+      1027,
+      1028,
+      1029,
+      1030,
+      1031,
+      1032,
+      1033,
+      1034,
+      1035,
+      1036,
+      1037,
+      1038,
+      1039,
+      1040
+    ],
+    "anchors": [
+      "addmm_48",
+      "addmm_49"
+    ],
+    "source_calls": [
+      {
+        "core_id": 0,
+        "source_position": 987,
+        "source_name": "add_80",
+        "schema_name": "aten::add",
+        "target": "aten.add.Tensor"
+      },
+      {
+        "core_id": 1,
+        "source_position": 1016,
+        "source_name": "view_120",
+        "schema_name": "aten::view",
+        "target": "aten.view.default"
+      },
+      {
+        "core_id": 2,
+        "source_position": 1017,
+        "source_name": "add_84",
+        "schema_name": "aten::add",
+        "target": "aten.add.Tensor"
+      },
+      {
+        "core_id": 3,
+        "source_position": 1018,
+        "source_name": "var_mean_24",
+        "schema_name": "aten::var_mean",
+        "target": "aten.var_mean.correction"
+      },
+      {
+        "core_id": 4,
+        "source_position": 1019,
+        "source_name": "getitem_192",
+        "schema_name": null,
+        "target": "<built-in function getitem>"
+      },
+      {
+        "core_id": 5,
+        "source_position": 1020,
+        "source_name": "getitem_193",
+        "schema_name": null,
+        "target": "<built-in function getitem>"
+      },
+      {
+        "core_id": 6,
+        "source_position": 1021,
+        "source_name": "add_85",
+        "schema_name": "aten::add",
+        "target": "aten.add.Tensor"
+      },
+      {
+        "core_id": 7,
+        "source_position": 1022,
+        "source_name": "rsqrt_24",
+        "schema_name": "aten::rsqrt",
+        "target": "aten.rsqrt.default"
+      },
+      {
+        "core_id": 8,
+        "source_position": 1023,
+        "source_name": "sub_24",
+        "schema_name": "aten::sub",
+        "target": "aten.sub.Tensor"
+      },
+      {
+        "core_id": 9,
+        "source_position": 1024,
+        "source_name": "mul_84",
+        "schema_name": "aten::mul",
+        "target": "aten.mul.Tensor"
+      },
+      {
+        "core_id": 10,
+        "source_position": 1025,
+        "source_name": "mul_85",
+        "schema_name": "aten::mul",
+        "target": "aten.mul.Tensor"
+      },
+      {
+        "core_id": 11,
+        "source_position": 1026,
+        "source_name": "add_86",
+        "schema_name": "aten::add",
+        "target": "aten.add.Tensor"
+      },
+      {
+        "core_id": 12,
+        "source_position": 1027,
+        "source_name": "select",
+        "schema_name": "aten::select",
+        "target": "aten.select.int"
+      },
+      {
+        "core_id": 13,
+        "source_position": 1028,
+        "source_name": "select_1",
+        "schema_name": "aten::select",
+        "target": "aten.select.int"
+      },
+      {
+        "core_id": 14,
+        "source_position": 1029,
+        "source_name": "convert_element_type_147",
+        "schema_name": "prims::convert_element_type",
+        "target": "prims.convert_element_type.default"
+      },
+      {
+        "core_id": 15,
+        "source_position": 1030,
+        "source_name": "convert_element_type_148",
+        "schema_name": "prims::convert_element_type",
+        "target": "prims.convert_element_type.default"
+      },
+      {
+        "core_id": 16,
+        "source_position": 1031,
+        "source_name": "convert_element_type_149",
+        "schema_name": "prims::convert_element_type",
+        "target": "prims.convert_element_type.default"
+      },
+      {
+        "core_id": 17,
+        "source_position": 1032,
+        "source_name": "permute_73",
+        "schema_name": "aten::permute",
+        "target": "aten.permute.default"
+      },
+      {
+        "core_id": 18,
+        "source_position": 1033,
+        "source_name": "addmm_48",
+        "schema_name": "aten::addmm",
+        "target": "aten.addmm.default"
+      },
+      {
+        "core_id": 19,
+        "source_position": 1034,
+        "source_name": "convert_element_type_150",
+        "schema_name": "prims::convert_element_type",
+        "target": "prims.convert_element_type.default"
+      },
+      {
+        "core_id": 20,
+        "source_position": 1035,
+        "source_name": "convert_element_type_151",
+        "schema_name": "prims::convert_element_type",
+        "target": "prims.convert_element_type.default"
+      },
+      {
+        "core_id": 21,
+        "source_position": 1036,
+        "source_name": "convert_element_type_152",
+        "schema_name": "prims::convert_element_type",
+        "target": "prims.convert_element_type.default"
+      },
+      {
+        "core_id": 22,
+        "source_position": 1037,
+        "source_name": "permute_74",
+        "schema_name": "aten::permute",
+        "target": "aten.permute.default"
+      },
+      {
+        "core_id": 23,
+        "source_position": 1038,
+        "source_name": "addmm_49",
+        "schema_name": "aten::addmm",
+        "target": "aten.addmm.default"
+      },
+      {
+        "core_id": 24,
+        "source_position": 1039,
+        "source_name": "add_87",
+        "schema_name": "aten::add",
+        "target": "aten.add.Tensor"
+      },
+      {
+        "core_id": 25,
+        "source_position": 1040,
+        "source_name": "div",
+        "schema_name": "aten::div",
+        "target": "aten.div.Tensor"
+      }
+    ]
+  },
+  "selection": {
+    "radius": 8,
+    "distance": "breadth-first hops on undirected source edges with transit barriers",
+    "placeholder_get_attr_transit": true,
+    "output_terminal": true,
+    "semantic_barriers": true,
+    "convex_closure": false,
+    "node_cap": null,
+    "gemm_cap": null,
+    "fanout_limit": 8,
+    "fanout": "distinct full-source consumers; protected MM routes may pass",
+    "constant_transit": false,
+    "metadata_transit": false,
+    "shape_argument_transit": false,
+    "protected_routes": [
+      "MM to MM computation",
+      "shared primary contraction operand",
+      "horizontal result join"
+    ],
+    "prune_effects": true,
+    "effect_transit": false,
+    "effect_policy": "Call-only mutable schema, FX-impure, nondeterministic tag, or explicit compiler RNG/state schema",
+    "effects": "Exclude effect calls before traversal; protection cannot cross them; results may become boundary inputs",
+    "outputs": "Keep escaping values with an internal matmul ancestor; DCE from those outputs only",
+    "shape_interface": "Coalesce typed shape values equal across every own config; preserve logical structure and settings"
+  },
+  "exact_structure": {
+    "sha256": "852f912657e5a55477488a8bc5b98efefc6b7a3ec48cec5c0e0f84daef216eca",
+    "digest_policy": "SHA-256 of ID-ordered graph data; node IDs are not canonical labels",
+    "matcher": "Exact joint incidence color refinement, then VF2 on original directed graphs; verify original colors and ports",
+    "graph": {
+      "nodes": [
+        {
+          "id": 0,
+          "color": "[\"call_function\",\"aten.add.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 1,
+          "color": "[\"call_function\",\"aten.view.default\",[[\"self\",[\"ref\"]],[\"size\",[\"ref\"]]],false,false]"
+        },
+        {
+          "id": 2,
+          "color": "[\"call_function\",\"aten.add.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 3,
+          "color": "[\"call_function\",\"aten.var_mean.correction\",[[\"self\",[\"ref\"]],[\"dim\",[\"list\",[[\"int\",2]]]],[\"correction\",[\"int\",0]],[\"keepdim\",[\"bool\",true]]],false,false]"
+        },
+        {
+          "id": 4,
+          "color": "[\"call_function\",\"_operator.getitem\",[[\"tuple\",[[\"ref\"],[\"int\",0]]],[\"dict\",[]]],false,false]"
+        },
+        {
+          "id": 5,
+          "color": "[\"call_function\",\"_operator.getitem\",[[\"tuple\",[[\"ref\"],[\"int\",1]]],[\"dict\",[]]],false,false]"
+        },
+        {
+          "id": 6,
+          "color": "[\"call_function\",\"aten.add.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"float\",\"0x1.0c6f7a0b5ed8dp-20\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 7,
+          "color": "[\"call_function\",\"aten.rsqrt.default\",[[\"self\",[\"ref\"]]],false,false]"
+        },
+        {
+          "id": 8,
+          "color": "[\"call_function\",\"aten.sub.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 9,
+          "color": "[\"call_function\",\"aten.mul.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]]],false,false]"
+        },
+        {
+          "id": 10,
+          "color": "[\"call_function\",\"aten.mul.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]]],false,false]"
+        },
+        {
+          "id": 11,
+          "color": "[\"call_function\",\"aten.add.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 12,
+          "color": "[\"call_function\",\"aten.select.int\",[[\"self\",[\"ref\"]],[\"dim\",[\"int\",1]],[\"index\",[\"int\",0]]],false,false]"
+        },
+        {
+          "id": 13,
+          "color": "[\"call_function\",\"aten.select.int\",[[\"self\",[\"ref\"]],[\"dim\",[\"int\",1]],[\"index\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 14,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 15,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 16,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 17,
+          "color": "[\"call_function\",\"aten.permute.default\",[[\"self\",[\"ref\"]],[\"dims\",[\"list\",[[\"int\",1],[\"int\",0]]]]],false,false]"
+        },
+        {
+          "id": 18,
+          "color": "[\"call_function\",\"aten.addmm.default\",[[\"self\",[\"ref\"]],[\"mat1\",[\"ref\"]],[\"mat2\",[\"ref\"]],[\"beta\",[\"int\",1]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 19,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 20,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 21,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 22,
+          "color": "[\"call_function\",\"aten.permute.default\",[[\"self\",[\"ref\"]],[\"dims\",[\"list\",[[\"int\",1],[\"int\",0]]]]],false,false]"
+        },
+        {
+          "id": 23,
+          "color": "[\"call_function\",\"aten.addmm.default\",[[\"self\",[\"ref\"]],[\"mat1\",[\"ref\"]],[\"mat2\",[\"ref\"]],[\"beta\",[\"int\",1]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 24,
+          "color": "[\"call_function\",\"aten.add.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 25,
+          "color": "[\"call_function\",\"aten.div.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"int\",2]]],true,false]"
+        },
+        {
+          "id": 26,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 27,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 28,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 29,
+          "color": "[\"shape_parameter\",\"shape\"]"
+        },
+        {
+          "id": 30,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 31,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 32,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 33,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 34,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 35,
+          "color": "[\"input\",\"tensor\"]"
+        }
+      ],
+      "edges": [
+        {
+          "source": 0,
+          "target": 2,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 2,
+          "target": 8,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "ports": "[[\"args\",\"tuple\",0]]"
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "ports": "[[\"args\",\"tuple\",0]]"
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 5,
+          "target": 8,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 6,
+          "target": 7,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 7,
+          "target": 9,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 8,
+          "target": 9,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 9,
+          "target": 10,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 10,
+          "target": 11,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 11,
+          "target": 12,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 11,
+          "target": 13,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 12,
+          "target": 16,
+          "ports": "[[\"argument\",\"a\"]]"
+        },
+        {
+          "source": 13,
+          "target": 21,
+          "ports": "[[\"argument\",\"a\"]]"
+        },
+        {
+          "source": 14,
+          "target": 18,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 15,
+          "target": 17,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 16,
+          "target": 18,
+          "ports": "[[\"argument\",\"mat1\"]]"
+        },
+        {
+          "source": 17,
+          "target": 18,
+          "ports": "[[\"argument\",\"mat2\"]]"
+        },
+        {
+          "source": 18,
+          "target": 24,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 19,
+          "target": 23,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 20,
+          "target": 22,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 21,
+          "target": 23,
+          "ports": "[[\"argument\",\"mat1\"]]"
+        },
+        {
+          "source": 22,
+          "target": 23,
+          "ports": "[[\"argument\",\"mat2\"]]"
+        },
+        {
+          "source": 23,
+          "target": 24,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 24,
+          "target": 25,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 26,
+          "target": 0,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 27,
+          "target": 0,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 28,
+          "target": 1,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 29,
+          "target": 1,
+          "ports": "[[\"argument\",\"size\"]]"
+        },
+        {
+          "source": 30,
+          "target": 10,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 31,
+          "target": 11,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 32,
+          "target": 14,
+          "ports": "[[\"argument\",\"a\"]]"
+        },
+        {
+          "source": 33,
+          "target": 15,
+          "ports": "[[\"argument\",\"a\"]]"
+        },
+        {
+          "source": 34,
+          "target": 19,
+          "ports": "[[\"argument\",\"a\"]]"
+        },
+        {
+          "source": 35,
+          "target": 20,
+          "ports": "[[\"argument\",\"a\"]]"
+        }
+      ]
+    },
+    "input_nodes": [
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "input_roles": {
+      "input_26": "input",
+      "input_27": "input",
+      "input_28": "input",
+      "input_29": "shape_parameter",
+      "input_30": "input",
+      "input_31": "input",
+      "input_32": "input",
+      "input_33": "input",
+      "input_34": "input",
+      "input_35": "input"
+    },
+    "escaping_nodes": [
+      25
+    ],
+    "effect_nodes": []
+  },
+  "input_config_hash": "SHA-256 of exact structure, retained settings and alias membership; first 8 hex digits",
+  "oracle": {
+    "implementation": "pytorch_eager",
+    "status": "placeholder"
+  },
+  "model_accounting": "overlapping regions; excluded from disjoint model partition manifests",
+  "replay_interface": {
+    "schema_version": 1,
+    "policy": "typed shape specs equal across all retained captured points; no symbolic relation inferred",
+    "observed_input_configs": 1,
+    "logical_input_nodes": [
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "physical_input_nodes": [
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "logical_to_physical": [
+      {
+        "logical": 26,
+        "physical": 26
+      },
+      {
+        "logical": 27,
+        "physical": 27
+      },
+      {
+        "logical": 28,
+        "physical": 28
+      },
+      {
+        "logical": 29,
+        "physical": 29
+      },
+      {
+        "logical": 30,
+        "physical": 30
+      },
+      {
+        "logical": 31,
+        "physical": 31
+      },
+      {
+        "logical": 32,
+        "physical": 32
+      },
+      {
+        "logical": 33,
+        "physical": 33
+      },
+      {
+        "logical": 34,
+        "physical": 34
+      },
+      {
+        "logical": 35,
+        "physical": 35
+      }
+    ],
+    "physical_ids": [
+      {
+        "representative": 26,
+        "physical": 26
+      },
+      {
+        "representative": 27,
+        "physical": 27
+      },
+      {
+        "representative": 28,
+        "physical": 28
+      },
+      {
+        "representative": 29,
+        "physical": 29
+      },
+      {
+        "representative": 30,
+        "physical": 30
+      },
+      {
+        "representative": 31,
+        "physical": 31
+      },
+      {
+        "representative": 32,
+        "physical": 32
+      },
+      {
+        "representative": 33,
+        "physical": 33
+      },
+      {
+        "representative": 34,
+        "physical": 34
+      },
+      {
+        "representative": 35,
+        "physical": 35
+      }
+    ],
+    "shape_groups": [
+      {
+        "representative": 29,
+        "logical_nodes": [
+          29
+        ],
+        "physical": 29
+      }
+    ]
+  },
+  "replay_exact_structure": {
+    "sha256": "852f912657e5a55477488a8bc5b98efefc6b7a3ec48cec5c0e0f84daef216eca",
+    "graph": {
+      "nodes": [
+        {
+          "id": 0,
+          "color": "[\"call_function\",\"aten.add.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 1,
+          "color": "[\"call_function\",\"aten.view.default\",[[\"self\",[\"ref\"]],[\"size\",[\"ref\"]]],false,false]"
+        },
+        {
+          "id": 2,
+          "color": "[\"call_function\",\"aten.add.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 3,
+          "color": "[\"call_function\",\"aten.var_mean.correction\",[[\"self\",[\"ref\"]],[\"dim\",[\"list\",[[\"int\",2]]]],[\"correction\",[\"int\",0]],[\"keepdim\",[\"bool\",true]]],false,false]"
+        },
+        {
+          "id": 4,
+          "color": "[\"call_function\",\"_operator.getitem\",[[\"tuple\",[[\"ref\"],[\"int\",0]]],[\"dict\",[]]],false,false]"
+        },
+        {
+          "id": 5,
+          "color": "[\"call_function\",\"_operator.getitem\",[[\"tuple\",[[\"ref\"],[\"int\",1]]],[\"dict\",[]]],false,false]"
+        },
+        {
+          "id": 6,
+          "color": "[\"call_function\",\"aten.add.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"float\",\"0x1.0c6f7a0b5ed8dp-20\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 7,
+          "color": "[\"call_function\",\"aten.rsqrt.default\",[[\"self\",[\"ref\"]]],false,false]"
+        },
+        {
+          "id": 8,
+          "color": "[\"call_function\",\"aten.sub.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 9,
+          "color": "[\"call_function\",\"aten.mul.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]]],false,false]"
+        },
+        {
+          "id": 10,
+          "color": "[\"call_function\",\"aten.mul.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]]],false,false]"
+        },
+        {
+          "id": 11,
+          "color": "[\"call_function\",\"aten.add.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 12,
+          "color": "[\"call_function\",\"aten.select.int\",[[\"self\",[\"ref\"]],[\"dim\",[\"int\",1]],[\"index\",[\"int\",0]]],false,false]"
+        },
+        {
+          "id": 13,
+          "color": "[\"call_function\",\"aten.select.int\",[[\"self\",[\"ref\"]],[\"dim\",[\"int\",1]],[\"index\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 14,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 15,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 16,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 17,
+          "color": "[\"call_function\",\"aten.permute.default\",[[\"self\",[\"ref\"]],[\"dims\",[\"list\",[[\"int\",1],[\"int\",0]]]]],false,false]"
+        },
+        {
+          "id": 18,
+          "color": "[\"call_function\",\"aten.addmm.default\",[[\"self\",[\"ref\"]],[\"mat1\",[\"ref\"]],[\"mat2\",[\"ref\"]],[\"beta\",[\"int\",1]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 19,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 20,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 21,
+          "color": "[\"call_function\",\"prims.convert_element_type.default\",[[\"a\",[\"ref\"]],[\"dtype\",[\"torch.dtype\",\"torch.bfloat16\"]]],false,false]"
+        },
+        {
+          "id": 22,
+          "color": "[\"call_function\",\"aten.permute.default\",[[\"self\",[\"ref\"]],[\"dims\",[\"list\",[[\"int\",1],[\"int\",0]]]]],false,false]"
+        },
+        {
+          "id": 23,
+          "color": "[\"call_function\",\"aten.addmm.default\",[[\"self\",[\"ref\"]],[\"mat1\",[\"ref\"]],[\"mat2\",[\"ref\"]],[\"beta\",[\"int\",1]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 24,
+          "color": "[\"call_function\",\"aten.add.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"ref\"]],[\"alpha\",[\"int\",1]]],false,false]"
+        },
+        {
+          "id": 25,
+          "color": "[\"call_function\",\"aten.div.Tensor\",[[\"self\",[\"ref\"]],[\"other\",[\"int\",2]]],true,false]"
+        },
+        {
+          "id": 26,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 27,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 28,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 29,
+          "color": "[\"shape_parameter\",\"shape\"]"
+        },
+        {
+          "id": 30,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 31,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 32,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 33,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 34,
+          "color": "[\"input\",\"tensor\"]"
+        },
+        {
+          "id": 35,
+          "color": "[\"input\",\"tensor\"]"
+        }
+      ],
+      "edges": [
+        {
+          "source": 0,
+          "target": 2,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 2,
+          "target": 8,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "ports": "[[\"args\",\"tuple\",0]]"
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "ports": "[[\"args\",\"tuple\",0]]"
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 5,
+          "target": 8,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 6,
+          "target": 7,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 7,
+          "target": 9,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 8,
+          "target": 9,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 9,
+          "target": 10,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 10,
+          "target": 11,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 11,
+          "target": 12,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 11,
+          "target": 13,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 12,
+          "target": 16,
+          "ports": "[[\"argument\",\"a\"]]"
+        },
+        {
+          "source": 13,
+          "target": 21,
+          "ports": "[[\"argument\",\"a\"]]"
+        },
+        {
+          "source": 14,
+          "target": 18,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 15,
+          "target": 17,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 16,
+          "target": 18,
+          "ports": "[[\"argument\",\"mat1\"]]"
+        },
+        {
+          "source": 17,
+          "target": 18,
+          "ports": "[[\"argument\",\"mat2\"]]"
+        },
+        {
+          "source": 18,
+          "target": 24,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 19,
+          "target": 23,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 20,
+          "target": 22,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 21,
+          "target": 23,
+          "ports": "[[\"argument\",\"mat1\"]]"
+        },
+        {
+          "source": 22,
+          "target": 23,
+          "ports": "[[\"argument\",\"mat2\"]]"
+        },
+        {
+          "source": 23,
+          "target": 24,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 24,
+          "target": 25,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 26,
+          "target": 0,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 27,
+          "target": 0,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 28,
+          "target": 1,
+          "ports": "[[\"argument\",\"self\"]]"
+        },
+        {
+          "source": 29,
+          "target": 1,
+          "ports": "[[\"argument\",\"size\"]]"
+        },
+        {
+          "source": 30,
+          "target": 10,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 31,
+          "target": 11,
+          "ports": "[[\"argument\",\"other\"]]"
+        },
+        {
+          "source": 32,
+          "target": 14,
+          "ports": "[[\"argument\",\"a\"]]"
+        },
+        {
+          "source": 33,
+          "target": 15,
+          "ports": "[[\"argument\",\"a\"]]"
+        },
+        {
+          "source": 34,
+          "target": 19,
+          "ports": "[[\"argument\",\"a\"]]"
+        },
+        {
+          "source": 35,
+          "target": 20,
+          "ports": "[[\"argument\",\"a\"]]"
+        }
+      ]
+    },
+    "input_nodes": [
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "input_roles": {
+      "input_26": "input",
+      "input_27": "input",
+      "input_28": "input",
+      "input_29": "shape_parameter",
+      "input_30": "input",
+      "input_31": "input",
+      "input_32": "input",
+      "input_33": "input",
+      "input_34": "input",
+      "input_35": "input"
+    },
+    "escaping_nodes": [
+      25
+    ],
+    "effect_nodes": []
+  }
+}

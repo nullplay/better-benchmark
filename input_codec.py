@@ -12,6 +12,8 @@ Compact form (plain JSON, no string grammar):
     ["S", [128, 512, 1, 1]]          # lifted shape param (repros only)
     ["sc", 0.5]                       # python scalar
     ["sym", 128]                      # symint hint
+    ["tuple", [[[128], "f32"], ["sc", None]]]  # nested boundary value
+    ["list", [[[128], "f32"]]]
 
 Tensor entry: [shape, dtype, opts?]. opts keys, ALL optional (defaults
 omitted): "st" stride (absent = contiguous), "dev" device (absent =
@@ -99,6 +101,15 @@ def runs_gen_rank(gen: dict) -> tuple:
 
 def _gen_to_compact(gen: dict) -> list | None:
     kind = gen.get("kind")
+    fields = {
+        "randn": {"kind"}, "index": {"kind", "low", "high"},
+        "randint": {"kind", "low", "high"}, "permutation": {"kind", "size"},
+        "offsets": {"kind", "high"}, "grouped_mm_offsets": {"kind", "high"},
+        "constant": {"kind", "value"},
+        "runs": {"kind", "low", "high", "n_unique", "n_runs", "sorted"},
+    }
+    if kind not in fields or set(gen) - fields[kind]:
+        return ["spec", dict(gen)]
     if kind in (None, "randn"):
         return None  # default for floats — omitted
     if kind == "index":
@@ -110,18 +121,20 @@ def _gen_to_compact(gen: dict) -> list | None:
         if gen.get("size") is not None:
             out.append(int(gen["size"]))
         return out
-    if kind == "offsets":
-        return ["offsets", int(gen.get("high", 1))]
+    if kind in ("offsets", "grouped_mm_offsets"):
+        return [kind, int(gen.get("high", 1))]
     if kind == "constant":
         return ["const", gen.get("value", 0)]
     if kind == "runs":
         return ["runs", int(gen["low"]), int(gen["high"]), int(gen["n_unique"]),
                 int(gen["n_runs"]), int(bool(gen["sorted"]))]
-    return [kind] + [v for k, v in sorted(gen.items()) if k != "kind"]
+    return ["spec", dict(gen)]
 
 
 def _gen_from_compact(c: list) -> dict:
     kind = c[0]
+    if kind == "spec":
+        return dict(c[1])
     if kind == "index":
         return {"kind": "index", "low": c[1], "high": c[2]}
     if kind == "randint":
@@ -129,8 +142,8 @@ def _gen_from_compact(c: list) -> dict:
     if kind == "perm":
         return {"kind": "permutation",
                 "size": c[1] if len(c) > 1 else None}
-    if kind == "offsets":
-        return {"kind": "offsets", "high": c[1]}
+    if kind in ("offsets", "grouped_mm_offsets"):
+        return {"kind": kind, "high": c[1]}
     if kind == "const":
         return {"kind": "constant", "value": c[1]}
     if kind == "runs":
@@ -149,12 +162,34 @@ _KNOWN_KEYS = {"kind", "name", "shape", "dtype", "stride", "device",
 def compact_from_spec(spec: dict, include_name: bool = False) -> list:
     """Verbose spec dict -> compact JSON entry (lossless)."""
     kind = spec.get("kind", "tensor")
-    if kind == "shape":
-        return ["S", list(spec["dims"])]
-    if kind == "symint":
-        return ["sym", spec.get("value", spec.get("hint", 1))]
-    if kind == "scalar":
-        return ["sc", spec.get("value")]
+    if kind in ("tuple", "list"):
+        entry = [kind, [compact_from_spec(item, include_name) for item in spec["items"]]]
+        opts = {}
+        if include_name and spec.get("name"):
+            opts["n"] = spec["name"]
+        extras = {k: v for k, v in spec.items() if k not in {"kind", "items", "name"} and v is not None}
+        if extras:
+            opts["x"] = extras
+        if opts:
+            entry.append(opts)
+        return entry
+    if kind in ("shape", "symint", "scalar"):
+        if kind == "shape":
+            entry = ["S", list(spec["dims"])]
+        elif kind == "symint":
+            entry = ["sym", spec.get("value", spec.get("hint", 1))]
+        else:
+            entry = ["sc", spec.get("value")]
+        opts = {}
+        if include_name and spec.get("name"):
+            opts["n"] = spec["name"]
+        extras = {k: v for k, v in spec.items()
+                  if k not in {"kind", "name", "dims", "value", "hint"} and v is not None}
+        if extras:
+            opts["x"] = extras
+        if opts:
+            entry.append(opts)
+        return entry
 
     entry: list = [list(spec["shape"]), _short_dtype(spec["dtype"])]
     opts: dict = {}
@@ -199,12 +234,19 @@ def compact_from_spec(spec: dict, include_name: bool = False) -> list:
 
 def spec_from_compact(entry: list, name: str | None = None) -> dict:
     """Compact JSON entry -> verbose spec dict (the in-memory format)."""
-    if entry and entry[0] == "S":
-        return {"kind": "shape", "name": name, "dims": list(entry[1])}
-    if entry and entry[0] == "sym":
-        return {"kind": "symint", "name": name, "value": entry[1]}
-    if entry and entry[0] == "sc":
-        return {"kind": "scalar", "name": name, "value": entry[1]}
+    if entry and isinstance(entry[0], str) and entry[0] in ("tuple", "list"):
+        opts = entry[2] if len(entry) > 2 else {}
+        spec = {"kind": entry[0], "name": name if name is not None else opts.get("n"),
+                "items": [spec_from_compact(item) for item in entry[1]]}
+        spec.update(opts.get("x", {}))
+        return spec
+    if entry and isinstance(entry[0], str) and entry[0] in ("S", "sym", "sc"):
+        opts = entry[2] if len(entry) > 2 else {}
+        spec = {"kind": {"S": "shape", "sym": "symint", "sc": "scalar"}[entry[0]],
+                "name": name if name is not None else opts.get("n")}
+        spec["dims" if entry[0] == "S" else "value"] = list(entry[1]) if entry[0] == "S" else entry[1]
+        spec.update(opts.get("x", {}))
+        return spec
 
     shape, dtype = list(entry[0]), _long_dtype(entry[1])
     opts = entry[2] if len(entry) > 2 else {}
@@ -237,6 +279,8 @@ def render_T(entry_or_spec) -> str:
     never parsed back; the data is the compact/verbose form)."""
     entry = (compact_from_spec(entry_or_spec)
              if isinstance(entry_or_spec, dict) else entry_or_spec)
+    if isinstance(entry[0], str) and entry[0] in ("tuple", "list"):
+        return f"{entry[0].capitalize()}({', '.join(render_T(item) for item in entry[1])})"
     if entry[0] == "S":
         return f"S({entry[1]})"
     if entry[0] == "sym":
@@ -302,6 +346,8 @@ def is_symbolic_entry(entry) -> bool:
     """True if a compact entry contains symbolic dims/strides or is symint."""
     if not isinstance(entry, list) or not entry:
         return False
+    if isinstance(entry[0], str) and entry[0] in ("tuple", "list"):
+        return any(is_symbolic_entry(item) for item in entry[1])
     if entry[0] == "I":
         return True
     if entry[0] == "S" and len(entry) > 1 and isinstance(entry[1], list):
@@ -368,13 +414,15 @@ def evaluate_symbolic_entry(entry: list, bindings: dict) -> list:
     """
     if not is_symbolic_entry(entry):
         return entry
+    if isinstance(entry[0], str) and entry[0] in ("tuple", "list"):
+        return [entry[0], [evaluate_symbolic_entry(item, bindings) for item in entry[1]], *entry[2:]]
     if entry[0] == "I":
         hint = entry[1]
         expr = entry[2] if len(entry) > 2 else None
         return ["sym", _eval_dim(expr, bindings) if expr is not None else hint]
     if entry[0] == "S":
         # lifted shape param with symbolic dims: evaluate each slot
-        return ["S", [_eval_dim(d, bindings) for d in entry[1]]]
+        return ["S", [_eval_dim(d, bindings) for d in entry[1]], *entry[2:]]
     shape = [_eval_dim(d, bindings) for d in entry[0]]
     out = [shape, entry[1]]
     opts = dict(entry[2]) if len(entry) > 2 else {}

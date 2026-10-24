@@ -1,0 +1,58 @@
+"""8-hop region from a captured real-world FX graph.
+
+Exact structure and source provenance: meta.json and ../../matmul_manifest.json.
+All retained input settings: shapes.json.
+"""
+import sys
+from math import inf, nan
+from pathlib import Path
+
+import torch
+import torch._inductor.inductor_prims
+NoneType = type(None)
+import torch as _fx_global_device
+device = _fx_global_device.device
+import torch.fx._pytree as fx_pytree
+import torch.utils._pytree as pytree
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from repro_harness import default_shape_config, make_inputs_from_config, benchmark_repro
+
+_repro_version = 3
+
+
+class Repro(torch.nn.Module):
+    def forward(self, input_20, input_21, input_22, input_23, input_24):
+        convert_element_type_default = torch.ops.prims.convert_element_type.default(input_20, torch.float32)
+        convert_element_type_default_1 = torch.ops.prims.convert_element_type.default(input_21, torch.bfloat16);  input_21 = None
+        permute_default = torch.ops.aten.permute.default(convert_element_type_default_1, [1, 0]);  convert_element_type_default_1 = None
+        permute_default_1 = torch.ops.aten.permute.default(permute_default, [1, 0]);  permute_default = None
+        convert_element_type_default_2 = torch.ops.prims.convert_element_type.default(permute_default_1, torch.float32);  permute_default_1 = None
+        mul_tensor = torch.ops.aten.mul.Tensor(convert_element_type_default, convert_element_type_default_2);  convert_element_type_default = convert_element_type_default_2 = None
+        convert_element_type_default_3 = torch.ops.prims.convert_element_type.default(mul_tensor, torch.bfloat16);  mul_tensor = None
+        permute_default_2 = torch.ops.aten.permute.default(input_20, [1, 0]);  input_20 = None
+        mm_default = torch.ops.aten.mm.default(permute_default_2, input_22);  permute_default_2 = None
+        convert_element_type_default_4 = torch.ops.prims.convert_element_type.default(mm_default, torch.float32);  mm_default = None
+        convert_element_type_default_5 = torch.ops.prims.convert_element_type.default(convert_element_type_default_3, torch.float32);  convert_element_type_default_3 = None
+        convert_element_type_default_6 = torch.ops.prims.convert_element_type.default(input_22, torch.float32);  input_22 = None
+        mul_tensor_1 = torch.ops.aten.mul.Tensor(convert_element_type_default_6, convert_element_type_default_6);  convert_element_type_default_6 = None
+        sub_tensor = torch.ops.aten.sub.Tensor(1, mul_tensor_1, alpha = 1);  mul_tensor_1 = None
+        mul_tensor_2 = torch.ops.aten.mul.Tensor(convert_element_type_default_5, sub_tensor);  convert_element_type_default_5 = sub_tensor = None
+        convert_element_type_default_7 = torch.ops.prims.convert_element_type.default(mul_tensor_2, torch.bfloat16);  mul_tensor_2 = None
+        mm_default_1 = torch.ops.aten.mm.default(convert_element_type_default_7, input_23);  input_23 = None
+        permute_default_3 = torch.ops.aten.permute.default(convert_element_type_default_7, [1, 0]);  convert_element_type_default_7 = None
+        mm_default_2 = torch.ops.aten.mm.default(permute_default_3, input_24);  permute_default_3 = input_24 = None
+        convert_element_type_default_8 = torch.ops.prims.convert_element_type.default(mm_default_1, torch.float32);  mm_default_1 = None
+        return (convert_element_type_default_4, mm_default_2, convert_element_type_default_8)
+
+
+def make_inputs(shape_config=None):
+    if shape_config is None:
+        shape_config = default_shape_config(__file__)
+    if shape_config is None:
+        raise RuntimeError("No input points in the sibling shapes.json")
+    return make_inputs_from_config(shape_config)
+
+
+if __name__ == "__main__":
+    benchmark_repro(__file__, Repro, make_inputs)

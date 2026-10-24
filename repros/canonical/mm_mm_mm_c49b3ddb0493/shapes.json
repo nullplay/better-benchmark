@@ -1,0 +1,1074 @@
+{
+  "points": [
+    {
+      "shape_hash": "7d64cc5d",
+      "config_sha256": "7d64cc5d63ec904239cd4330d3e26df9dfc6fc3f328dc648f1ba45a51ca63973",
+      "input_settings": {
+        "inputs": [
+          {
+            "node": 37,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                262208,
+                2560
+              ],
+              "stride": [
+                2560,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 38,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                1,
+                1000
+              ],
+              "stride": [
+                1000,
+                1
+              ],
+              "dtype": "torch.int64",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false,
+              "gen": {
+                "kind": "index",
+                "low": 0,
+                "high": 262208
+              },
+              "generator": {
+                "kind": "index",
+                "low": 0,
+                "high": 262208
+              },
+              "constraint_source": "graph_inference",
+              "observed": {
+                "min": 78,
+                "max": 260905,
+                "n_unique": 999
+              }
+            }
+          },
+          {
+            "node": 39,
+            "spec": {
+              "kind": "tensor",
+              "shape": [],
+              "stride": [],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 40,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                2560
+              ],
+              "stride": [
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 41,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    2560
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 42,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                2048,
+                2560
+              ],
+              "stride": [
+                2560,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 43,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    2048
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 44,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    -1
+                  ],
+                  [
+                    "int",
+                    256
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 45,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    2560
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 46,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                1024,
+                2560
+              ],
+              "stride": [
+                2560,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 47,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    1024
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 48,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    -1
+                  ],
+                  [
+                    "int",
+                    256
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 49,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    2560
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 50,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                1024,
+                2560
+              ],
+              "stride": [
+                2560,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 51,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    1024
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 52,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    -1
+                  ],
+                  [
+                    "int",
+                    256
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 53,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    4
+                  ],
+                  [
+                    "int",
+                    2
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    256
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 54,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    8
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    256
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "aliases": [
+          {
+            "nbytes": 1342504960,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 37,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 8000,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 38,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 2,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 39,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 5120,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 40,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 10485760,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 42,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 5242880,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 46,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 5242880,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 50,
+                "path": []
+              }
+            ]
+          }
+        ]
+      },
+      "inputs": [
+        [
+          [
+            262208,
+            2560
+          ],
+          "bf16",
+          {
+            "alias": 0,
+            "x": {
+              "layout": "torch.strided",
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          }
+        ],
+        [
+          [
+            1,
+            1000
+          ],
+          "i64",
+          {
+            "gen": [
+              "index",
+              0,
+              262208
+            ],
+            "alias": 1,
+            "x": {
+              "layout": "torch.strided",
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false,
+              "constraint_source": "graph_inference",
+              "observed": {
+                "min": 78,
+                "max": 260905,
+                "n_unique": 999
+              }
+            }
+          }
+        ],
+        [
+          [],
+          "bf16",
+          {
+            "alias": 2,
+            "x": {
+              "layout": "torch.strided",
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          }
+        ],
+        [
+          [
+            2560
+          ],
+          "bf16",
+          {
+            "alias": 3,
+            "x": {
+              "layout": "torch.strided",
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          }
+        ],
+        [
+          "S",
+          [
+            1000,
+            2560
+          ]
+        ],
+        [
+          [
+            2048,
+            2560
+          ],
+          "bf16",
+          {
+            "alias": 4,
+            "x": {
+              "layout": "torch.strided",
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          }
+        ],
+        [
+          "S",
+          [
+            1,
+            1000,
+            2048
+          ]
+        ],
+        [
+          "S",
+          [
+            1,
+            1000,
+            -1,
+            256
+          ]
+        ],
+        [
+          [
+            1024,
+            2560
+          ],
+          "bf16",
+          {
+            "alias": 5,
+            "x": {
+              "layout": "torch.strided",
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          }
+        ],
+        [
+          "S",
+          [
+            1,
+            1000,
+            1024
+          ]
+        ],
+        [
+          [
+            1024,
+            2560
+          ],
+          "bf16",
+          {
+            "alias": 6,
+            "x": {
+              "layout": "torch.strided",
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          }
+        ],
+        [
+          "S",
+          [
+            1,
+            4,
+            2,
+            1000,
+            256
+          ]
+        ],
+        [
+          "S",
+          [
+            1,
+            8,
+            1000,
+            256
+          ]
+        ]
+      ],
+      "alias_group_nbytes": [
+        1342504960,
+        8000,
+        2,
+        5120,
+        10485760,
+        5242880,
+        5242880
+      ],
+      "replay_overrides": [],
+      "fidelity": {},
+      "models": {
+        "hf/infer/google/gemma-3-4b-it": {
+          "occurrences": 1
+        }
+      },
+      "replay_input_settings": {
+        "inputs": [
+          {
+            "node": 37,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                262208,
+                2560
+              ],
+              "stride": [
+                2560,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 38,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                1,
+                1000
+              ],
+              "stride": [
+                1000,
+                1
+              ],
+              "dtype": "torch.int64",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false,
+              "gen": {
+                "kind": "index",
+                "low": 0,
+                "high": 262208
+              },
+              "generator": {
+                "kind": "index",
+                "low": 0,
+                "high": 262208
+              },
+              "constraint_source": "graph_inference",
+              "observed": {
+                "min": 78,
+                "max": 260905,
+                "n_unique": 999
+              }
+            }
+          },
+          {
+            "node": 39,
+            "spec": {
+              "kind": "tensor",
+              "shape": [],
+              "stride": [],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 40,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                2560
+              ],
+              "stride": [
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 41,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    2560
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 42,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                2048,
+                2560
+              ],
+              "stride": [
+                2560,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 43,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    2048
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 44,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    -1
+                  ],
+                  [
+                    "int",
+                    256
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 45,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                1024,
+                2560
+              ],
+              "stride": [
+                2560,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 46,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    1024
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 47,
+            "spec": {
+              "kind": "tensor",
+              "shape": [
+                1024,
+                2560
+              ],
+              "stride": [
+                2560,
+                1
+              ],
+              "dtype": "torch.bfloat16",
+              "device": "cuda:0",
+              "layout": "torch.strided",
+              "storage_offset": 0,
+              "requires_grad": false,
+              "is_conj": false,
+              "is_neg": false
+            }
+          },
+          {
+            "node": 48,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    4
+                  ],
+                  [
+                    "int",
+                    2
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    256
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "node": 49,
+            "spec": {
+              "kind": "shape",
+              "value": [
+                "list",
+                [
+                  [
+                    "int",
+                    1
+                  ],
+                  [
+                    "int",
+                    8
+                  ],
+                  [
+                    "int",
+                    1000
+                  ],
+                  [
+                    "int",
+                    256
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "aliases": [
+          {
+            "nbytes": 1342504960,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 37,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 8000,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 38,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 2,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 39,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 5120,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 40,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 10485760,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 42,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 5242880,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 45,
+                "path": []
+              }
+            ]
+          },
+          {
+            "nbytes": 5242880,
+            "size_source": "fake_tensor_metadata",
+            "members": [
+              {
+                "node": 47,
+                "path": []
+              }
+            ]
+          }
+        ]
+      },
+      "replay_config_sha256": "addc95b3f29e36d7432ae8e3d4dc439a0de5d20f72459846e88c68bb0fbd48a1"
+    }
+  ]
+}

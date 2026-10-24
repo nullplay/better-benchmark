@@ -29,10 +29,8 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
-import ast
 import json
 import random
-import re
 import sys
 from pathlib import Path
 
@@ -42,6 +40,7 @@ DEFAULT_CORPUS_ROOT = ROOT / "repros"
 CANONICAL_DIR = DEFAULT_CORPUS_ROOT / "canonical"
 MODELS_DIR = DEFAULT_CORPUS_ROOT / "models"
 BASELINE_PATH = ROOT / ".corpus_baseline.json"
+_REPRO_MODULE_CACHE: dict[Path, tuple[object | None, str | None]] = {}
 
 sys.path.insert(0, str(ROOT))
 
@@ -57,6 +56,7 @@ def set_corpus_root(corpus_root: Path) -> bool:
     corpus_root = Path(corpus_root).resolve()
     CANONICAL_DIR = corpus_root / "canonical"
     MODELS_DIR = corpus_root / "models"
+    _REPRO_MODULE_CACHE.clear()
     return corpus_root != DEFAULT_CORPUS_ROOT.resolve()
 
 
@@ -81,6 +81,17 @@ def _read_json_safe(path: Path) -> tuple[dict | None, str | None]:
         return data, None
     except Exception as exc:
         return None, str(exc)
+
+
+def _load_repro_cached(path: Path) -> tuple[object | None, str | None]:
+    path = path.resolve()
+    if path not in _REPRO_MODULE_CACHE:
+        try:
+            from oracle_harness import load_repro_module
+            _REPRO_MODULE_CACHE[path] = (load_repro_module(path.parent), None)
+        except Exception as exc:
+            _REPRO_MODULE_CACHE[path] = (None, str(exc))
+    return _REPRO_MODULE_CACHE[path]
 
 
 # ---------------------------------------------------------------------------
@@ -110,7 +121,7 @@ def check_repros_parse() -> list[str]:
     bad = []
     for repro_py in sorted(CANONICAL_DIR.glob("*/repro.py")):
         try:
-            ast.parse(repro_py.read_text())
+            compile(repro_py.read_text(), str(repro_py), "exec")
         except SyntaxError as exc:
             bad.append(f"{repro_py.parent.name}: {exc}")
     if bad:
@@ -124,10 +135,6 @@ def check_repros_parse() -> list[str]:
     return errors
 
 
-_SHAPES_CONFIG_LINE = re.compile(
-    r'^_shapes_config\s*=\s*["\'](.+?)["\']\s*$', re.MULTILINE)
-
-
 def check_shapes_config() -> list[str]:
     """Hard invariant 3: every repro must have a loadable input config.
 
@@ -138,25 +145,43 @@ def check_shapes_config() -> list[str]:
     drift means a writer bypassed the codec).
 
     v2 repros (inline _shapes_config string): the legacy check — the
-    string must be a real top-level assignment, and where shapes.json
+    module must expose the string, and where shapes.json
     exists it must match one point's signature.
     """
     errors = []
     missing = []
     drifted = []
+    from input_codec import render_signature
+    from repro_harness import _eval_signature, load_shape_configs
+
     for repro_py in sorted(CANONICAL_DIR.glob("*/repro.py")):
-        source = repro_py.read_text()
+        module, error = _load_repro_cached(repro_py)
+        if module is None:
+            missing.append(f"{repro_py.parent.name} (module load failed: {error})")
+            continue
         shapes_path = repro_py.parent / "shapes.json"
-        is_v3 = "_repro_version = 3" in source
+        is_v3 = getattr(module, "_repro_version", None) == 3
+        config_value = getattr(module, "_shapes_config", None)
+        points = []
+        if shapes_path.exists():
+            data, error = _read_json_safe(shapes_path)
+            if data is None:
+                missing.append(f"{repro_py.parent.name} (invalid shapes.json: {error})")
+                continue
+            points = data.get("points", [])
+            try:
+                for point in points:
+                    if "inputs" in point and "signature" in point:
+                        if render_signature(point["inputs"]) != point["signature"]:
+                            drifted.append(f"{repro_py.parent.name}/{point.get('shape_hash')}")
+            except Exception as exc:
+                missing.append(f"{repro_py.parent.name} (invalid input data: {exc})")
+                continue
 
         if is_v3:
             if not shapes_path.exists():
                 missing.append(f"{repro_py.parent.name} (v3, no shapes.json)")
                 continue
-            try:
-                points = json.loads(shapes_path.read_text()).get("points", [])
-            except Exception:
-                continue  # malformed shapes.json caught elsewhere
             # "inputs": [] is VALID for zero-input partitions (constant-
             # producing scalar_tensor regions take no args) — only a point
             # MISSING the key entirely has no loadable config.
@@ -164,45 +189,20 @@ def check_shapes_config() -> list[str]:
                 missing.append(
                     f"{repro_py.parent.name} (v3, no structured inputs)")
                 continue
-            try:
-                from input_codec import render_signature
-                for p in points:
-                    if p.get("inputs") and p.get("signature"):
-                        if render_signature(p["inputs"]) != p["signature"]:
-                            drifted.append(
-                                f"{repro_py.parent.name}/{p.get('shape_hash')}")
-            except ImportError:
-                pass
+        elif not isinstance(config_value, str):
+            missing.append(repro_py.parent.name)
             continue
+        elif shapes_path.exists() and config_value not in {p.get("signature") for p in points}:
+            drifted.append(repro_py.parent.name)
 
-        # v2 legacy path
-        if "_shapes_config" not in source:
-            missing.append(repro_py.parent.name)
-            continue
         try:
-            tree = ast.parse(source)
-        except SyntaxError:
-            continue  # covered by invariant 2
-        found = False
-        for node in tree.body:
-            if isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name) and target.id == "_shapes_config":
-                        found = True
-                        break
-        if not found:
-            missing.append(repro_py.parent.name)
-            continue
-        if shapes_path.exists():
-            m = _SHAPES_CONFIG_LINE.search(source)
-            if m:
-                try:
-                    sigs = {p.get("signature") for p in
-                            json.loads(shapes_path.read_text()).get("points", [])}
-                except Exception:
-                    sigs = None
-                if sigs is not None and m.group(1) not in sigs:
-                    drifted.append(repro_py.parent.name)
+            configs = load_shape_configs(str(repro_py))
+            if not configs:
+                if is_v3:
+                    raise ValueError("shared loader returned no input configs")
+                _eval_signature(config_value)
+        except Exception as exc:
+            missing.append(f"{repro_py.parent.name} (input config load failed: {exc})")
 
     if drifted:
         errors.append(
@@ -285,6 +285,106 @@ def check_no_empty_canonical_dirs() -> list[str]:
     return errors
 
 
+def check_matmul_manifest() -> list[str]:
+    """Every overlapping matmul cut must resolve without losing input points."""
+    from collections import Counter
+    from hashlib import sha256
+
+    manifest_path = CANONICAL_DIR.parent / "matmul_manifest.json"
+    if not manifest_path.exists():
+        matmuls = [path for path in CANONICAL_DIR.glob("*/meta.json")
+                   if (_read_json_safe(path)[0] or {}).get("kind") == "matmul_region"]
+        return ["Matmul canonical artifacts exist without matmul_manifest.json"] if matmuls else []
+    manifest, error = _read_json_safe(manifest_path)
+    if manifest is None:
+        return [f"Invalid matmul manifest: {error}"]
+
+    errors = []
+    try:
+        max_ops = manifest["selection"].get("max_matmul_ops")
+        if max_ops is not None and (not isinstance(max_ops, int) or max_ops < 1):
+            raise ValueError("Matmul operation limit must be a positive integer")
+        patterns, point_models, meta_occurrences = {}, {}, {}
+        for entry in manifest["patterns"]:
+            name = entry["name"]
+            if name in patterns:
+                raise ValueError(f"Duplicate matmul manifest pattern: {name}")
+            directory = CANONICAL_DIR / name
+            meta, error = _read_json_safe(directory / "meta.json")
+            shapes, shapes_error = _read_json_safe(directory / "shapes.json")
+            if meta is None or shapes is None:
+                raise ValueError(f"Missing matmul artifacts: {name}: {error or shapes_error}")
+            if meta["pattern_hash"] != entry["pattern_hash"] or meta.get("collection") != manifest["collection"]:
+                raise ValueError(f"Matmul pattern identity mismatch: {name}")
+            if meta["gemm_count"] != entry["gemm_count"] or sum(meta["gemm_ops"].values()) != entry["gemm_count"]:
+                raise ValueError(f"Matmul operation count mismatch: {name}")
+            if max_ops is not None and entry["gemm_count"] > max_ops:
+                raise ValueError(f"Matmul operation limit exceeded: {name}")
+            points = shapes["points"]
+            hashes = {point["shape_hash"] for point in points}
+            if len(hashes) != len(points) or len(points) != entry["input_configs"]:
+                raise ValueError(f"Matmul input configuration loss/duplication: {name}")
+            patterns[name] = hashes
+            meta_occurrences[name] = meta["occurrences"]
+            for point in points:
+                for model, data in point["models"].items():
+                    point_models[name, point["shape_hash"], model] = data["occurrences"]
+        cohort = {path.parent.name for path in CANONICAL_DIR.glob("*/meta.json")
+                  if (_read_json_safe(path)[0] or {}).get("kind") == "matmul_region"}
+        if cohort != set(patterns):
+            raise ValueError("Matmul canonical directories and manifest pattern population differ")
+
+        anchors, cuts, with_anchors = 0, 0, 0
+        observed, identities, anchor_ops = Counter(), set(), Counter()
+        for source in manifest["source_graphs"]:
+            graph = CANONICAL_DIR.parent / source["graph"]
+            sidecar = graph.with_suffix(".meta.json")
+            for path, key in ((graph, "graph_sha256"), (sidecar, "sidecar_sha256")):
+                if sha256(path.read_bytes()).hexdigest() != source[key]:
+                    raise ValueError(f"Matmul source checksum changed: {source['graph']}")
+            source_anchors = 0
+            model = "/".join(source[key] for key in ("suite", "mode", "model"))
+            for cut in source["cuts"]:
+                name, shape_hash = cut["pattern"], cut["shape_hash"]
+                if shape_hash not in patterns.get(name, set()):
+                    raise ValueError(f"Unresolved matmul source cut: {name}/{shape_hash}")
+                for anchor in cut["anchors"]:
+                    identity = source["graph"], anchor
+                    if identity in identities:
+                        raise ValueError(f"Matmul anchor assigned more than once: {identity}")
+                    identities.add(identity)
+                    if "anchor_ops" in cut:
+                        anchor_ops[cut["anchor_ops"][anchor]] += 1
+                count = len(cut["anchors"])
+                observed[name, shape_hash, model] += count
+                source_anchors += count
+                cuts += 1
+            if source_anchors != source["anchors"]:
+                raise ValueError(f"Matmul source anchor count mismatch: {source['graph']}")
+            anchors += source_anchors
+            with_anchors += bool(source_anchors)
+        totals = {"source_graphs": len(manifest["source_graphs"]), "graphs_with_anchors": with_anchors,
+                  "anchors": anchors, "source_cuts": cuts, "structures": len(patterns),
+                  "input_configs": sum(len(points) for points in patterns.values())}
+        if totals != manifest["totals"] or anchors != sum(manifest["anchor_counts"].values()):
+            raise ValueError("Matmul manifest totals do not match its artifacts and source cuts")
+        if anchor_ops and anchor_ops != Counter(manifest["anchor_counts"]):
+            raise ValueError("Matmul anchor operation counts do not match source assignments")
+        if observed != Counter(point_models):
+            raise ValueError("Matmul point/model occurrences do not match source anchor assignments")
+        per_pattern = Counter()
+        for (name, _, _), count in observed.items():
+            per_pattern[name] += count
+        if per_pattern != Counter(meta_occurrences):
+            raise ValueError("Matmul structure occurrences do not match source anchor assignments")
+    except Exception as exc:
+        errors.append(f"Matmul manifest invariant failed: {exc}")
+    if not errors:
+        print(f"  [PASS] matmul manifest: {totals['structures']} structures, "
+              f"{totals['input_configs']} configs, {totals['anchors']} source anchors")
+    return errors
+
+
 def check_shapes_eager_validation() -> list[str]:
     """Hard invariant 6: a random sample of shapes must pass eager validation.
 
@@ -311,10 +411,10 @@ def check_shapes_eager_validation() -> list[str]:
             cwd=str(ROOT),
         )
         if result.returncode != 0:
-            # Extract failure count from output
-            output_lines = result.stdout.strip().split("\n")
-            fail_summary = [l for l in output_lines if "FAIL" in l.upper()]
-            sample = "\n".join(fail_summary[:5]) if fail_summary else result.stdout[-500:]
+            # Keep the identifying repro/configuration lines with the summary.
+            sample = result.stdout[-4000:]
+            if result.stderr:
+                sample += "\n" + result.stderr[-2000:]
             errors.append(
                 f"Eager validation of sampled shapes failed (exit {result.returncode}):\n"
                 f"    {sample}"
@@ -358,36 +458,26 @@ def warn_multi_model_shapes() -> list[str]:
 def warn_shapes_config_parseable() -> list[str]:
     """Soft invariant 7: _shapes_config values should be parseable."""
     warnings = []
-    # Import parse_shapes_config if available (needs torch, so may fail)
+    # Validate legacy signatures as specs; tensor generation belongs to the
+    # eager validation gate below.
     try:
         sys.path.insert(0, str(ROOT))
-        from repro_harness import parse_shapes_config
+        from repro_harness import _eval_signature, load_shape_configs
     except Exception:
         # If we can't import (no torch), skip this check gracefully
         return []
 
     for repro_py in sorted(CANONICAL_DIR.glob("*/repro.py")):
-        source = repro_py.read_text()
-        # Extract _shapes_config value
-        try:
-            tree = ast.parse(source)
-        except SyntaxError:
+        module, _ = _load_repro_cached(repro_py)
+        if module is None:
             continue
-        for node in tree.body:
-            if isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name) and target.id == "_shapes_config":
-                        try:
-                            config_val = ast.literal_eval(node.value)
-                        except (ValueError, TypeError):
-                            continue
-                        if isinstance(config_val, str):
-                            try:
-                                parse_shapes_config(config_val)
-                            except Exception as exc:
-                                warnings.append(
-                                    f"{repro_py.parent.name}: {exc}"
-                                )
+        config_value = getattr(module, "_shapes_config", None)
+        try:
+            load_shape_configs(str(repro_py))
+            if isinstance(config_value, str):
+                _eval_signature(config_value)
+        except Exception as exc:
+            warnings.append(f"{repro_py.parent.name}: {exc}")
     return warnings
 
 
@@ -706,6 +796,7 @@ def main() -> int:
 
 
 def run_standard_invariants(skip_baseline: bool = False) -> int:
+    _REPRO_MODULE_CACHE.clear()
     print("=" * 60)
     print("Corpus Invariant Validation")
     print(f"  canonical: {CANONICAL_DIR}")
@@ -727,6 +818,7 @@ def run_standard_invariants(skip_baseline: bool = False) -> int:
     hard_errors.extend(check_shapes_config())
     hard_errors.extend(check_manifest_consistency())
     hard_errors.extend(check_no_empty_canonical_dirs())
+    hard_errors.extend(check_matmul_manifest())
     hard_errors.extend(check_shapes_eager_validation())
 
     # --- Soft invariants ---

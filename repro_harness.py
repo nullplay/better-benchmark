@@ -648,6 +648,8 @@ def _generation_spec(spec: dict) -> dict | None:
     gen = spec.get("gen")
     if gen is not None:
         return gen
+    if spec.get("generator") is not None:
+        return spec["generator"]
 
     if spec.get("constraint") == "permutation":
         return {"kind": "permutation", "size": spec.get("max_val")}
@@ -686,32 +688,95 @@ def _make_permutation_tensor(shape, dtype, device, stride=None, size=None):
 
 
 def make_inputs_from_config(config: dict) -> list:
-    """Create inputs from a shape config. Returns mix of tensors and shape-param lists.
+    """Create tensors, scalars, shape params and nested tuple/list inputs.
 
     Alias groups: specs carrying "alias_group" are views of ONE storage
     (packed-qkv saved views). One buffer is allocated per group — sized by
-    config["alias_group_nbytes"][g], the true capture-time allocation —
+    config["alias_group_nbytes"][g], the recorded replay allocation —
     and each member is as_strided at its own (shape, stride, offset).
     Footprint and locality then match the model instead of giving every
     view a private storage.
     """
+    if any(spec.get("kind") in ("tuple", "list") for spec in config["inputs"]):
+        leaves = []
+
+        def flatten(spec):
+            if spec.get("kind") in ("tuple", "list"):
+                for item in spec["items"]:
+                    flatten(item)
+            else:
+                leaves.append(spec)
+
+        for spec in config["inputs"]:
+            flatten(spec)
+        values = iter(make_inputs_from_config({**config, "inputs": leaves}))
+
+        def rebuild(spec):
+            if spec.get("kind") in ("tuple", "list"):
+                items = [rebuild(item) for item in spec["items"]]
+                return tuple(items) if spec["kind"] == "tuple" else items
+            return next(values)
+
+        return [rebuild(spec) for spec in config["inputs"]]
+
     group_nbytes = config.get("alias_group_nbytes") or []
     group_storage: dict[int, torch.Tensor] = {}
+    group_specs: dict[int, list[dict]] = {}
+    for spec in config["inputs"]:
+        if spec.get("alias_group") is not None:
+            group_specs.setdefault(spec["alias_group"], []).append(spec)
 
     def _group_buffer(g: int, device, dtype=None) -> torch.Tensor:
         if g not in group_storage:
-            nbytes = group_nbytes[g] if g < len(group_nbytes) else 0
-            if nbytes <= 0:
+            nbytes = group_nbytes[g] if 0 <= g < len(group_nbytes) else None
+            if nbytes is None or nbytes < 0:
                 raise ValueError(
                     f"alias_group {g} has no recorded nbytes "
                     f"(alias_group_nbytes={group_nbytes})")
+            if nbytes == 0 and any(_numel(spec["shape"]) for spec in group_specs[g]):
+                raise ValueError(f"alias_group {g} has a zero-byte allocation for a nonempty tensor")
             buf = torch.empty(nbytes, dtype=torch.uint8, device=device)
-            if dtype is not None and dtype.is_floating_point and nbytes % dtype.itemsize == 0:
+            recipes = [(spec, _generation_spec(spec)) for spec in group_specs[g]
+                       if _generation_spec(spec) is not None]
+            bounded = [gen for _, gen in recipes if gen.get("kind") in ("index", "randint")]
+            constants = [gen.get("value", 0) for _, gen in recipes if gen.get("kind") == "constant"]
+            if bounded or constants:
+                if nbytes % dtype.itemsize:
+                    raise ValueError(f"alias_group {g} allocation is not aligned for {dtype}")
+                if any(getattr(torch, spec["dtype"].removeprefix("torch.")) != dtype
+                       for spec, _ in recipes):
+                    raise ValueError(f"alias_group {g} generators use different dtypes")
+                low = max(int(gen.get("low", 0)) for gen in bounded) if bounded else None
+                high = min(int(gen.get("high", 100)) for gen in bounded) if bounded else None
+                typed = buf.view(dtype)
+                if constants:
+                    value = constants[0]
+                    if any(other != value for other in constants[1:]) or (
+                            bounded and not low <= value < high):
+                        raise ValueError(f"alias_group {g} has incompatible generation constraints")
+                    typed.fill_(value)
+                else:
+                    if high <= low:
+                        raise ValueError(f"alias_group {g} has disjoint index bounds")
+                    typed.copy_(torch.randint(low, high, typed.shape, device=device).to(dtype))
+            elif dtype is not None and dtype.is_floating_point and nbytes % dtype.itemsize == 0:
                 # Raw byte noise viewed as a float dtype includes NaN/Inf bit patterns.
-                buf.view(dtype).normal_()
+                if "float8" in str(dtype):
+                    buf.view(dtype).copy_(torch.randn(nbytes // dtype.itemsize, device=device).to(dtype))
+                else:
+                    buf.view(dtype).normal_()
             else:
                 buf.random_(0, 255)  # bit-pattern noise; views reinterpret dtype
             group_storage[g] = buf
+            for spec in group_specs[g]:
+                gen = _generation_spec(spec)
+                if not (spec.get("exact") and spec.get("data") is not None) and (
+                        gen is None or gen.get("kind") in ("index", "randint", "constant", "randn")):
+                    continue
+                standalone = {key: value for key, value in spec.items() if key != "alias_group"}
+                values = make_inputs_from_config({"inputs": [standalone]})[0]
+                view = buf.view(values.dtype).as_strided(values.shape, values.stride(), values.storage_offset())
+                view.copy_(values)
         return group_storage[g]
 
     def _contiguous_stride_local(shape):
@@ -723,7 +788,7 @@ def make_inputs_from_config(config: dict) -> list:
     result = []
     for spec in config["inputs"]:
         if spec.get("kind") == "shape":
-            result.append(spec["dims"])
+            result.append(tuple(spec["dims"]) if spec.get("container") == "tuple" else list(spec["dims"]))
             continue
 
         if spec.get("kind") == "symint":
@@ -738,6 +803,9 @@ def make_inputs_from_config(config: dict) -> list:
         if spec.get("kind") == "scalar":
             result.append(spec["value"])
             continue
+
+        if spec.get("layout", "torch.strided") not in ("torch.strided", "strided", torch.strided):
+            raise ValueError(f"unsupported input layout {spec['layout']}")
 
         if spec.get("alias_group") is not None:
             shape = spec["shape"]
@@ -757,24 +825,53 @@ def make_inputs_from_config(config: dict) -> list:
         device = spec.get("device", "cuda")
         gen = _generation_spec(spec)
 
+        if spec.get("exact") and spec.get("data") is not None:
+            values = torch.tensor(spec["data"], dtype=dtype, device=device).reshape(shape)
+            if stride:
+                view = torch.empty_strided(shape, stride, dtype=dtype, device=device)
+                view.copy_(values)
+                values = view
+            result.append(values)
+            continue
+
+        if gen and gen.get("kind") == "constant":
+            if stride:
+                storage = torch.full((_storage_size_for_strided(shape, stride),), gen.get("value", 0),
+                                     dtype=dtype, device=device)
+                result.append(storage.as_strided(shape, stride))
+            else:
+                result.append(torch.full(shape, gen.get("value", 0), dtype=dtype, device=device))
+            continue
+
+        if gen and gen.get("kind") == "grouped_mm_offsets":
+            # Grouped GEMM takes cumulative END offsets (no leading zero).
+            # The final offset must cover the entire partitioned dimension.
+            # Saved graphs retain sizes, but not the original routing values;
+            # use a deterministic even partition, recorded by the collector.
+            groups = _numel(shape)
+            high = int(gen["high"])
+            if len(shape) != 1 or groups < 1 or high < 0:
+                raise ValueError("grouped_mm_offsets needs a nonempty vector and high >= 0")
+            vals = torch.div(torch.arange(1, groups + 1, device=device) * high,
+                             groups, rounding_mode="floor").to(dtype)
+            if stride or spec.get("storage_offset"):
+                offset = int(spec.get("storage_offset", 0))
+                storage = torch.empty(offset + _storage_size_for_strided(shape, stride or [1]),
+                                      dtype=dtype, device=device)
+                view = storage.as_strided(shape, stride or [1], offset)
+                view.copy_(vals)
+                vals = view
+            result.append(vals)
+            continue
+
         if gen and gen.get("kind") == "runs":
             # Any integer dtype (incl. unsigned): ids are drawn in int64 and
             # clamped to the dtype's range.
-            result.append(_make_runs_input(shape, stride, gen, dtype, device))
+            result.append(_make_runs_input(shape, stride, gen, dtype, device,
+                                           int(spec.get("storage_offset", 0) or 0)))
             continue
 
         if dtype in (torch.int64, torch.int32, torch.int16, torch.int8):
-            if gen and gen.get("kind") == "constant":
-                # Single safe value (maxpool window-center offsets etc).
-                if stride:
-                    numel = _storage_size_for_strided(shape, stride)
-                    storage = torch.full((numel,), int(gen.get("value", 0)),
-                                         dtype=dtype, device=device)
-                    result.append(storage.as_strided(shape, stride))
-                else:
-                    result.append(torch.full(shape, int(gen.get("value", 0)),
-                                             dtype=dtype, device=device))
-                continue
             if gen and gen.get("kind") == "permutation":
                 result.append(
                     _make_permutation_tensor(
@@ -810,12 +907,17 @@ def make_inputs_from_config(config: dict) -> list:
             else:
                 result.append(torch.randint(low, hi, shape, dtype=dtype, device=device))
         elif dtype == torch.bool:
+            sample_dtype = torch.int64 if gen and gen.get("kind") == "index" else torch.bool
+            low = int(gen.get("low", 0)) if sample_dtype == torch.int64 else 0
+            hi = int(gen.get("high", 100)) if sample_dtype == torch.int64 else 2
+            if hi <= low:
+                hi = low + 1
             if stride:
                 numel = _storage_size_for_strided(shape, stride)
-                storage = torch.randint(0, 2, (numel,), dtype=torch.bool, device=device)
+                storage = torch.randint(low, hi, (numel,), dtype=sample_dtype, device=device).to(torch.bool)
                 result.append(storage.as_strided(shape, stride))
             else:
-                result.append(torch.randint(0, 2, shape, dtype=torch.bool, device=device))
+                result.append(torch.randint(low, hi, shape, dtype=sample_dtype, device=device).to(torch.bool))
         else:
             if gen and gen.get("kind") == "index":
                 low = int(gen.get("low", 0))
@@ -830,10 +932,35 @@ def make_inputs_from_config(config: dict) -> list:
                     result.append(torch.randint(low, hi, shape, dtype=torch.int64, device=device).to(dtype))
             elif stride:
                 numel = _storage_size_for_strided(shape, stride)
-                storage = torch.randn(numel, dtype=dtype, device=device)
+                sample_dtype = torch.float32 if "float8" in str(dtype) else dtype
+                storage = torch.randn(numel, dtype=sample_dtype, device=device).to(dtype)
                 result.append(storage.as_strided(shape, stride))
             else:
-                result.append(torch.randn(shape, dtype=dtype, device=device))
+                sample_dtype = torch.float32 if "float8" in str(dtype) else dtype
+                result.append(torch.randn(shape, dtype=sample_dtype, device=device).to(dtype))
+    # Standalone boundary views may have a storage offset without sharing an
+    # alias group. Keep that offset for all input generators as well.
+    for index, (tensor, spec) in enumerate(zip(result, config["inputs"])):
+        if not isinstance(tensor, torch.Tensor):
+            continue
+        offset = int(spec.get("storage_offset", 0) or 0)
+        if offset and spec.get("alias_group") is None and tensor.storage_offset() != offset:
+            stride = spec.get("stride") or list(tensor.stride())
+            span = _storage_size_for_strided(spec["shape"], stride)
+            storage = torch.empty(offset + span, dtype=tensor.dtype, device=tensor.device)
+            view = storage.as_strided(spec["shape"], stride, offset)
+            if _layout_overlaps(spec["shape"], stride):
+                storage[offset:].copy_(tensor.as_strided((span,), (1,), tensor.storage_offset()))
+            else:
+                view.copy_(tensor)
+            tensor = view
+        if spec.get("is_conj"):
+            tensor = tensor.conj()
+        if spec.get("is_neg"):
+            tensor = tensor._neg_view()
+        if spec.get("requires_grad"):
+            tensor.requires_grad_()
+        result[index] = tensor
     return result
 
 

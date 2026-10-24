@@ -644,6 +644,7 @@ def infer_index_bounds_from_gm(
         torch.ops.aten.gather.default: (0, 1),
 
         torch.ops.aten.index_select.default: (0, 1),
+        torch.ops.aten.index_add.default: (0, 1),
         torch.ops.aten.embedding.default: (0, None),
     }
     passthrough_ops = {
@@ -834,6 +835,10 @@ def infer_index_bounds_from_gm(
                                 continue
 
                         if target in index_consumers:
+                            if target == torch.ops.aten.index_add.default:
+                                index = user.args[2] if len(user.args) > 2 else user.kwargs.get("index")
+                                if index is not n:
+                                    continue
                             target_arg_idx, dim_arg_idx = index_consumers[target]
                             if len(user.args) > target_arg_idx:
                                 target_node = user.args[target_arg_idx]
