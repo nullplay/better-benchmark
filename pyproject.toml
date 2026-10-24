@@ -2,8 +2,14 @@
 name = "better-benchmark"
 version = "0.1.0"
 
+[project.scripts]
+bb-fx-visualize = "fx_visualizer.cli:main"
+
 [tool.setuptools]
 py-modules = ["repro_harness", "oracle_harness", "byte_accounting", "full_graph_harness", "input_codec", "capture_hook", "merge_captures", "roundtrip_validation", "numerics", "replay_dependencies"]
+
+[tool.setuptools.packages.find]
+include = ["fx_visualizer*"]
 
 [tool.pytest.ini_options]
 # All tests live under tests/. tests/conftest.py puts repo-root and

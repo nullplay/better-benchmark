@@ -305,6 +305,34 @@ Per-shape data lives under `points_by_shape`; top-level `oracle_us`/`compile_us`
 
 </details>
 
+## FX graph visualization
+
+Visualize an existing FX graph or any saved BB repro:
+
+```python
+from fx_visualizer import visualize_graph, visualize_repro
+
+artifacts = visualize_graph(gm, example_inputs, "results/fx")
+visualize_repro("repros/canonical/mean_014afd4984e6", "results/mean", configuration=0)
+```
+
+The default exports the original directed graph and input/output arguments
+without compilation or GPU allocation. Optional scheduler capture adds actual
+lowering and fusion boundaries; it stops before codegen and autotuning by
+default. Matmul comparisons offer template and native modes over the same FX
+graph. Broad rounded boundaries highlight exact members when clicked, including
+the lowering groups inside a selected fusion group.
+
+```bash
+python -m fx_visualizer --repro repros/canonical/mean_014afd4984e6 \
+    --output-dir results/mean
+python -m fx_visualizer --capture capture.json --output-dir results/saved_fx
+```
+
+The visualizer works with the existing corpus and BB loaders independently of
+matmul extraction. See [FX graph visualization](docs/fx_graph_visualization.md)
+for the Python API, CLI, saved reports and compiler evidence.
+
 ## Project Layout
 
 <details>
@@ -319,6 +347,7 @@ canonicalize_repros.py   # v2 format generation
 byte_accounting.py       # effective bytes for gather/scatter/embedding
 extract_reductions.py    # batch extraction from dynamo suite
 extract_vllm.py          # vLLM/HF model capture driver
+fx_visualizer/           # generic FX API, compiler captures, boundaries and HTML viewer
 
 scripts/
   bench_parallel.py      # parallel GPU benchmark runner (compile, --oracles, --full-graphs)
@@ -334,6 +363,7 @@ scripts/
   perf_ab_rollup.py      # careful A/B: shape-matched, genai-excl, per-model-e2e rollup
   generate_occurrence_sidecars.py  # trace models + price externs reproducibly
   dashboard_export.py    # single-run PyTorch v3 kernel + projected-model records
+  visualize_fx_graph.py  # visualize a BB repro or render saved scheduler captures
   build_model_accounting.py  # compact occurrence sidecars for dashboard export
   test_adversarial.py    # infrastructure regression tests
   test_merge_into.py     # --merge-into adversarial tests
