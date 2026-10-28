@@ -1,0 +1,26 @@
+{
+  "repro": "mm_repro/canonical/bmm_c8e6fc2c14b9/repro.py",
+  "shape_hash": "97e22389",
+  "wrapper": "mm_repro/canonical/bmm_c8e6fc2c14b9/helion/standalone.py",
+  "executed": false,
+  "gpu_kernels_executed": false,
+  "status": "ok",
+  "helion_kernels": 1,
+  "native_calls": 1,
+  "replacements": [
+    {
+      "triton_kernel": "triton_per_fused_bmm_clone_constant_pad_nd_permute_unbind_view_2",
+      "helion_call": "call_helion_op2",
+      "arguments": [
+        "buf0",
+        "buf1",
+        "buf2"
+      ]
+    }
+  ],
+  "compiled_input_order": [
+    0
+  ],
+  "torch_source": "/home/jaeyeonw/pytorch-nullplay/torch/__init__.py",
+  "seconds": 0.371
+}

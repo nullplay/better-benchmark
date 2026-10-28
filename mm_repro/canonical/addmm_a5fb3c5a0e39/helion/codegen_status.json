@@ -1,0 +1,42 @@
+{
+  "repro": "mm_repro/canonical/addmm_a5fb3c5a0e39/repro.py",
+  "shape_hash": "5b2bd060",
+  "wrapper": "mm_repro/canonical/addmm_a5fb3c5a0e39/helion/standalone.py",
+  "executed": false,
+  "gpu_kernels_executed": false,
+  "status": "ok",
+  "helion_kernels": 2,
+  "native_calls": 2,
+  "replacements": [
+    {
+      "triton_kernel": "triton_red_fused_addmm_permute_0",
+      "helion_call": "call_helion_op0_op1",
+      "arguments": [
+        "arg2_1",
+        "arg0_1",
+        "arg1_1",
+        "buf1"
+      ]
+    },
+    {
+      "triton_kernel": "triton_red_fused_addmm_permute_0",
+      "helion_call": "call_helion_op2_op3",
+      "arguments": [
+        "arg5_1",
+        "arg3_1",
+        "arg4_1",
+        "buf3"
+      ]
+    }
+  ],
+  "compiled_input_order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "torch_source": "/home/jaeyeonw/pytorch-nullplay/torch/__init__.py",
+  "seconds": 0.176
+}

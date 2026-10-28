@@ -1,0 +1,39 @@
+{
+  "repro": "mm_repro/canonical/addmm_mm_574486ab57bf/repro.py",
+  "shape_hash": "7ceca1ff",
+  "wrapper": "mm_repro/canonical/addmm_mm_574486ab57bf/helion/standalone.py",
+  "executed": false,
+  "gpu_kernels_executed": false,
+  "status": "ok",
+  "helion_kernels": 2,
+  "native_calls": 2,
+  "replacements": [
+    {
+      "triton_kernel": "triton_red_fused_clone_mm_permute_view_0",
+      "helion_call": "call_helion_op0_op1",
+      "arguments": [
+        "arg1_1",
+        "arg0_1",
+        "buf1"
+      ]
+    },
+    {
+      "triton_kernel": "triton_red_fused_addmm_permute_1",
+      "helion_call": "call_helion_op2",
+      "arguments": [
+        "arg4_1",
+        "arg2_1",
+        "buf2"
+      ]
+    }
+  ],
+  "compiled_input_order": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "torch_source": "/home/jaeyeonw/pytorch-nullplay/torch/__init__.py",
+  "seconds": 0.375
+}

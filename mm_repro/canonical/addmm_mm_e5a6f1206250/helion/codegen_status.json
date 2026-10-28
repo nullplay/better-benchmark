@@ -1,0 +1,15 @@
+{
+  "repro": "mm_repro/canonical/addmm_mm_e5a6f1206250/repro.py",
+  "shape_hash": "04b9d04d",
+  "wrapper": "mm_repro/canonical/addmm_mm_e5a6f1206250/helion/standalone.py",
+  "executed": false,
+  "gpu_kernels_executed": false,
+  "status": "failed",
+  "phase": "wrapper_conversion",
+  "category": "wrapper_generation",
+  "error_type": "WrapperGenerationError",
+  "error": "MM fell back to extern_kernels.mm",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/jaeyeonw/better-benchmark/scripts/generate_helion_wrappers.py\", line 232, in generate_one\n    wrapper, replacements = assemble_wrapper(wrapper_source, previews, bindings, shape_config, input_order)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/jaeyeonw/better-benchmark/scripts/generate_helion_wrappers.py\", line 116, in assemble_wrapper\n    tree = ReplaceNative().visit(tree)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/fbcode/platform010/lib/python3.12/ast.py\", line 407, in visit\n    return visitor(node)\n           ^^^^^^^^^^^^^\n  File \"/usr/local/fbcode/platform010/lib/python3.12/ast.py\", line 483, in generic_visit\n    value = self.visit(value)\n            ^^^^^^^^^^^^^^^^^\n  File \"/usr/local/fbcode/platform010/lib/python3.12/ast.py\", line 407, in visit\n    return visitor(node)\n           ^^^^^^^^^^^^^\n  File \"/usr/local/fbcode/platform010/lib/python3.12/ast.py\", line 483, in generic_visit\n    value = self.visit(value)\n            ^^^^^^^^^^^^^^^^^\n  File \"/usr/local/fbcode/platform010/lib/python3.12/ast.py\", line 407, in visit\n    return visitor(node)\n           ^^^^^^^^^^^^^\n  File \"/usr/local/fbcode/platform010/lib/python3.12/ast.py\", line 483, in generic_visit\n    value = self.visit(value)\n            ^^^^^^^^^^^^^^^^^\n  File \"/usr/local/fbcode/platform010/lib/python3.12/ast.py\", line 407, in visit\n    return visitor(node)\n           ^^^^^^^^^^^^^\n  File \"/usr/local/fbcode/platform010/lib/python3.12/ast.py\", line 492, in generic_visit\n    new_node = self.visit(old_value)\n               ^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/fbcode/platform010/lib/python3.12/ast.py\", line 407, in visit\n    return visitor(node)\n           ^^^^^^^^^^^^^\n  File \"/home/jaeyeonw/better-benchmark/scripts/generate_helion_wrappers.py\", line 103, in visit_Call\n    raise WrapperGenerationError(f\"MM fell back to extern_kernels.{node.func.attr}\")\n__mp_main__.WrapperGenerationError: MM fell back to extern_kernels.mm\n",
+  "helion_previews": 0,
+  "seconds": 0.467
+}
