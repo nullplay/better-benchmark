@@ -1,0 +1,33 @@
+{
+  "repro": "mm_repro/canonical/addmm_550c20ccea61/repro.py",
+  "shape_hash": "80d11798",
+  "wrapper": "mm_repro/canonical/addmm_550c20ccea61/helion/standalone.py",
+  "executed": false,
+  "gpu_kernels_executed": false,
+  "status": "ok",
+  "helion_kernels": 1,
+  "native_calls": 1,
+  "replacements": [
+    {
+      "triton_kernel": "triton_red_fused_add_addmm_convert_element_type_mul_view_1",
+      "helion_call": "call_helion_op1_op2",
+      "arguments": [
+        "arg0_1",
+        "buf0",
+        "arg3_1",
+        "arg2_1",
+        "arg4_1",
+        "buf2"
+      ]
+    }
+  ],
+  "compiled_input_order": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "torch_source": "/home/jaeyeonw/pytorch-nullplay/torch/__init__.py",
+  "seconds": 0.19
+}

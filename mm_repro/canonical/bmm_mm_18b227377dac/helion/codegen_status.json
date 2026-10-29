@@ -1,0 +1,41 @@
+{
+  "repro": "mm_repro/canonical/bmm_mm_18b227377dac/repro.py",
+  "shape_hash": "d294fd89",
+  "wrapper": "mm_repro/canonical/bmm_mm_18b227377dac/helion/standalone.py",
+  "executed": false,
+  "gpu_kernels_executed": false,
+  "status": "ok",
+  "helion_kernels": 2,
+  "native_calls": 2,
+  "replacements": [
+    {
+      "triton_kernel": "triton_red_fused_bmm_0",
+      "helion_call": "call_helion_op0",
+      "arguments": [
+        "arg0_1",
+        "arg1_1",
+        "buf0"
+      ]
+    },
+    {
+      "triton_kernel": "triton_red_fused_add_convert_element_type_mm_permute_slice_view_2",
+      "helion_call": "call_helion_op3_op4",
+      "arguments": [
+        "buf2",
+        "arg6_1",
+        "buf4"
+      ]
+    }
+  ],
+  "compiled_input_order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "torch_source": "/home/jaeyeonw/pytorch-nullplay/torch/__init__.py",
+  "seconds": 0.588
+}
